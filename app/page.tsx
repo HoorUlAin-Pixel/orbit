@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { getToday, type TodayItem } from "@/lib/rotation";
 import ChoreCard from "@/components/ChoreCard";
-
+import Loader from "@/components/Loader";
 const todayString = () => new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD, your local date
 
 export default function Home() {
@@ -54,17 +54,25 @@ export default function Home() {
 
   return (
     <main className="mx-auto max-w-md space-y-4 p-4 pb-24">
-      <header>
+      <header className="rounded-2xl bg-[linear-gradient(135deg,#4f46e5,#8b5cf6)] p-5 text-white shadow-md">
         <h1 className="text-2xl font-bold">Today 🪐</h1>
-        <p className="text-sm text-muted-foreground">Rotate. Share. Done.</p>
+        <p className="text-sm opacity-90">
+          {loading || items.length === 0
+            ? "Rotate. Share. Done."
+            : `${items.filter((i) => i.done).length} of ${items.length} done today`}
+        </p>
       </header>
 
       {loading ? (
-        <p className="text-muted-foreground">Loading…</p>
+       <Loader />
       ) : items.length === 0 ? (
-        <p className="text-muted-foreground">
-          Nothing due today. Add members and chores to get started.
-        </p>
+        <div className="rounded-2xl border border-dashed bg-card p-8 text-center">
+          <p className="text-4xl">🪐</p>
+          <p className="mt-2 font-semibold">Nothing due today</p>
+          <p className="text-sm text-muted-foreground">
+            Add your household's names and chores on the Add tab.
+          </p>
+        </div>
       ) : (
         items.map((item) => (
           <ChoreCard

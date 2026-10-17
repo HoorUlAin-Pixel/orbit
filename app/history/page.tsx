@@ -2,7 +2,8 @@
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/ui/card";
-
+import { CircleCheck } from "lucide-react";
+import Loader from "@/components/Loader";
 type Entry = { id: string; done_on: string; chore: string; member: string };
 
 const dayLabel = (day: string) =>
@@ -58,17 +59,21 @@ export default function HistoryPage() {
 
   return (
     <main className="mx-auto max-w-md space-y-4 p-4 pb-24">
-      <header>
+      <header className="rounded-2xl bg-[linear-gradient(135deg,#4f46e5,#8b5cf6)] p-5 text-white shadow-md">
         <h1 className="text-2xl font-bold">This week 🪐</h1>
-        <p className="text-sm text-muted-foreground">The last 7 days</p>
+        <p className="text-sm opacity-90">The last 7 days</p>
       </header>
 
       {loading ? (
-        <p className="text-muted-foreground">Loading…</p>
+        <Loader />
       ) : entries.length === 0 ? (
-        <p className="text-muted-foreground">
-          Nothing completed yet. Tap Done on a chore and it will show up here.
-        </p>
+        <div className="rounded-2xl border border-dashed bg-card p-8 text-center">
+          <p className="text-4xl">📅</p>
+          <p className="mt-2 font-semibold">Nothing completed yet</p>
+          <p className="text-sm text-muted-foreground">
+            Tap Done on a chore and it will show up here.
+          </p>
+        </div>
       ) : (
         <>
           <div className="flex flex-wrap gap-2">
@@ -88,7 +93,10 @@ export default function HistoryPage() {
                 .filter((e) => e.done_on === day)
                 .map((e) => (
                   <Card key={e.id} className="flex-row items-center justify-between p-3">
-                    <span>✅ {e.chore}</span>
+                    <span className="flex items-center gap-2">
+                      <CircleCheck className="size-4 text-green-500" />
+                      {e.chore}
+                    </span>
                     <span className="text-sm text-muted-foreground">{e.member}</span>
                   </Card>
                 ))}

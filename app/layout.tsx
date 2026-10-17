@@ -1,31 +1,22 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Nunito  } from "next/font/google";
 import BottomNav from "@/components/BottomNav";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const nunito  = Nunito ({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Orbit",
-  description: "Rotate. Share. Done",
-   icons: { apple: "/icons/180" },
+  description: "Rotate. Share. Done.",
+  icons: { icon: "/icons/64?round=1", apple: "/icons/180" },
 };
-
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={` h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className={`${nunito.className} antialiased`}>
         {children}
         <BottomNav />
       </body>

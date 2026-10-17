@@ -33,15 +33,22 @@ export default function AddChoreForm({ householdId }: { householdId: string }) {
         value={name}
         onChange={(e) => setName(e.target.value)}
       />
-      <select
-        value={frequency}
-        onChange={(e) => setFrequency(e.target.value)}
-        className="h-9 w-full rounded-md border bg-background px-3 text-sm"
-      >
-        <option value="daily">Daily</option>
-        <option value="weekly">Weekly</option>
-        <option value="custom">Custom</option>
-      </select>
+      <h2 className="text-lg font-semibold">How often?</h2>
+      <div className="grid grid-cols-3 gap-1 rounded-xl bg-muted p-1">
+        {["daily", "weekly", "custom"].map((f) => (
+          <button
+            key={f}
+            type="button"
+            onClick={() => setFrequency(f)}
+            className={`rounded-lg py-2 text-sm font-medium capitalize transition ${frequency === f
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "text-muted-foreground"
+              }`}
+          >
+            {f}
+          </button>
+        ))}
+      </div>
       {frequency === "custom" && (
         <div className="flex items-center gap-2 text-sm">
           Every
