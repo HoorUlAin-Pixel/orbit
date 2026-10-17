@@ -7,8 +7,12 @@ A mobile-first chore rotation app that decides who does what today, so nobody ha
 
 ![Orbit screenshot]
 
+<p>
+  <img src="home.jpeg" width="230" alt="Home" />
+  <img src="add.jpeg" width="230" alt="Add chore" />
+  <img src="history.jpeg" width="230" alt="History" />
+</p>
 
-![alt text](Screenshot_20261017-151927.jpg)
 
 ## What it does
 - **Today's rotation:** each due chore goes to the household member who has done the fewest, so the load stays fair.
