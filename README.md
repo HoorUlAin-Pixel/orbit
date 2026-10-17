@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Orbit 🪐
+**Rotate. Share. Done.**
 
-## Getting Started
+A mobile-first chore rotation app that decides who does what today, so nobody has to nag anyone.
 
-First, run the development server:
+**Live demo:** https://orbit-five-bice.vercel.app/
 
+![Orbit screenshot]
+
+
+![alt text](Screenshot_20261017-151927.jpg)
+
+## What it does
+- **Today's rotation:** each due chore goes to the household member who has done the fewest, so the load stays fair.
+- **One-tap "Done":** mark a chore complete from your phone.
+- **Weekly history:** see what got done in the last 7 days, and by whom.
+- **Installable:** works as a home-screen app (PWA).
+
+## Tech stack
+Next.js (App Router) · TypeScript · Tailwind CSS · shadcn/ui · Supabase (Postgres + Auth) · Vercel
+
+## How the rotation works
+`lib/rotation.ts` checks which chores are due today (based on each chore's frequency and its last completion). It then assigns each one to the member with the lightest load, counting what they've already done and what they've been given today.
+
+## Security
+Supabase Auth handles login. Row Level Security policies mean each user can only read and write their own household's data.
+
+## Run it locally
+```bash
+git clone https://github.com/HoorUlAin-Pixel/orbit.git
+cd orbit
+npm install
+```
+Create a `.env.local` file:
+```
+NEXT_PUBLIC_SUPABASE_URL=your-project-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+```
+Run the SQL schema in your Supabase SQL editor, then:
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Scope decisions
+Built to be finished, not perfect: 3 screens, one core feature. Deliberately left for v2: household invites, pinning a chore to one person, offline support, notifications.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## About
+[OPTIONAL: one line about why you built it, e.g. "Built in short nap-time sessions while returning to web development after a career break." Keep it or delete it, your call.]
