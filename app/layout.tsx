@@ -16,6 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Orbit",
   description: "Rotate. Share. Done",
+   icons: { apple: "/icons/180" },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
