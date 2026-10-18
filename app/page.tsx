@@ -28,7 +28,7 @@ export default function Home() {
 
     const [m, c, d] = await Promise.all([
       supabase.from("members").select("id, name"),
-      supabase.from("chores").select("id, name, every_n_days"),
+      supabase.from("chores").select("id, name, every_n_days, skipped_on"),
       supabase.from("completions").select("chore_id, member_id, done_on"),
     ]);
     setItems(getToday(m.data ?? [], c.data ?? [], d.data ?? [], todayString()));
@@ -51,20 +51,25 @@ export default function Home() {
     });
     load();
   }
+  async function skip(choreId: string, day: string | null) {
+    await createClient().rpc("skip_chore", { p_id: choreId, p_day: day });
+    load();
+  }
+  const active = items.filter((i) => !i.skipped);
 
   return (
     <main className="mx-auto max-w-md space-y-4 p-4 pb-24">
       <header className="rounded-2xl bg-[linear-gradient(135deg,#4f46e5,#8b5cf6)] p-5 text-white shadow-md">
         <h1 className="text-2xl font-bold">Today 🪐</h1>
         <p className="text-sm opacity-90">
-          {loading || items.length === 0
+          {loading || active.length === 0
             ? "Rotate. Share. Done."
-            : `${items.filter((i) => i.done).length} of ${items.length} done today`}
+            : `${active.filter((i) => i.done).length} of ${active.length} done today`}
         </p>
       </header>
 
       {loading ? (
-       <Loader />
+        <Loader />
       ) : items.length === 0 ? (
         <div className="rounded-2xl border border-dashed bg-card p-8 text-center">
           <p className="text-4xl">🪐</p>
@@ -79,6 +84,8 @@ export default function Home() {
             key={item.chore.id}
             item={item}
             onDone={() => item.assignee && markDone(item.chore.id, item.assignee.id)}
+            onSkip={() => skip(item.chore.id, todayString())}
+            onUndoSkip={() => skip(item.chore.id, null)}
           />
         ))
       )}

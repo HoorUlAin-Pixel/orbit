@@ -1,6 +1,6 @@
 import type { Chore, Completion, Member } from "./types";
 
-export type TodayItem = { chore: Chore; assignee: Member | null; done: boolean };
+export type TodayItem = { chore: Chore; assignee: Member | null; done: boolean; skipped?: boolean };
 
 export function getToday(
   members: Member[],
@@ -27,6 +27,10 @@ export function getToday(
       const who = members.find((m) => m.id === doneToday.member_id) ?? null;
       if (who) load.set(who.id, load.get(who.id)! + 1);
       items.push({ chore, assignee: who, done: true });
+      continue;
+    }
+    if (chore.skipped_on === today) {
+      items.push({ chore, assignee: null, done: false, skipped: true });
       continue;
     }
 
