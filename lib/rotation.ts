@@ -39,9 +39,10 @@ export function getToday(
     if (!due) continue;
 
     // Give it to whoever has the lightest load
-    const pick = members.reduce((a, b) =>
-      load.get(b.id)! < load.get(a.id)! ? b : a
-    );
+    const pinned = members.find((m) => m.id === chore.pinned_to);
+    const pick =
+      pinned ??
+      members.reduce((a, b) => (load.get(b.id)! < load.get(a.id)! ? b : a));
     load.set(pick.id, load.get(pick.id)! + 1);
     items.push({ chore, assignee: pick, done: false });
   }

@@ -23,7 +23,7 @@ export default function AddPage() {
 
     const [m, c] = await Promise.all([
       supabase.from("members").select("id, name").order("name"),
-      supabase.from("chores").select("id, name, every_n_days").order("name"),
+      supabase.from("chores").select("id, name, every_n_days, skipped_on, pinned_to").order("name"),
     ]);
     setMembers(m.data ?? []);
     setChores(c.data ?? []);
@@ -52,6 +52,7 @@ export default function AddPage() {
         <AddChoreForm
           key={editing.id}
           householdId={householdId}
+          members={members}
           chore={editing}
           onSaved={() => {
             setEditing(null);
@@ -60,10 +61,10 @@ export default function AddPage() {
           onCancel={() => setEditing(null)}
         />
       ) : (
-        <AddChoreForm householdId={householdId} />
+        <AddChoreForm householdId={householdId} members={members}/>
       )}
 
-      <ChoreList chores={chores} onEdit={setEditing} onChanged={load} />
+      <ChoreList chores={chores} members={members} onEdit={setEditing} onChanged={load} />
     </main>
   );
 }

@@ -28,7 +28,7 @@ export default function Home() {
 
     const [m, c, d] = await Promise.all([
       supabase.from("members").select("id, name"),
-      supabase.from("chores").select("id, name, every_n_days, skipped_on"),
+      supabase.from("chores").select("id, name, every_n_days, skipped_on, pinned_to"),
       supabase.from("completions").select("chore_id, member_id, done_on"),
     ]);
     setItems(getToday(m.data ?? [], c.data ?? [], d.data ?? [], todayString()));

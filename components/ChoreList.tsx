@@ -2,17 +2,20 @@
 import { Pencil, Trash2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/client";
-import type { Chore } from "@/lib/types";
+import type { Chore, Member } from "@/lib/types";
 
 const label = (n: number) =>
   n === 1 ? "Every day" : n === 7 ? "Every week" : `Every ${n} days`;
 
 export default function ChoreList({
   chores,
+  members,
   onEdit,
   onChanged,
+
 }: {
   chores: Chore[];
+  members: Member[];
   onEdit: (c: Chore) => void;
   onChanged: () => void;
 }) {
@@ -21,7 +24,7 @@ export default function ChoreList({
     await createClient().from("chores").delete().eq("id", c.id);
     onChanged();
   }
-
+  const who = (c: Chore) => members.find((m) => m.id === c.pinned_to)?.name;
   if (chores.length === 0) return null;
 
   return (
@@ -31,7 +34,10 @@ export default function ChoreList({
         <Card key={c.id} className="flex-row items-center gap-2 p-4 shadow-sm">
           <div className="min-w-0 flex-1">
             <p className="truncate font-medium">{c.name}</p>
-            <p className="text-sm text-muted-foreground">{label(c.every_n_days)}</p>
+            <p className="text-sm text-muted-foreground">
+              {label(c.every_n_days)}
+              {who(c) && ` · Pinned to ${who(c)}`}
+            </p>
           </div>
           <button
             onClick={() => onEdit(c)}
