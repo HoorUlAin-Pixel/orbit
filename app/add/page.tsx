@@ -5,6 +5,8 @@ import type { Chore, Member } from "@/lib/types";
 import AddChoreForm from "@/components/AddChoreForm";
 import ChoreList from "@/components/ChoreList";
 import MemberList from "@/components/MemberList";
+import { getMyHouseholdId } from "@/lib/household";
+import HouseholdCard from "@/components/HouseholdCard";
 import Loader from "@/components/Loader";
 
 export default function AddPage() {
@@ -16,10 +18,9 @@ export default function AddPage() {
 
   const load = useCallback(async () => {
     const supabase = createClient();
-    const { data: household } = await supabase
-      .from("households").select("id").limit(1).maybeSingle();
-    if (!household) return;
-    setHouseholdId(household.id);
+    const hid = await getMyHouseholdId(supabase);
+    if (!hid) return;
+    setHouseholdId(hid);
 
     const [m, c] = await Promise.all([
       supabase.from("members").select("id, name").order("name"),
@@ -62,10 +63,11 @@ export default function AddPage() {
           onCancel={() => setEditing(null)}
         />
       ) : (
-        <AddChoreForm householdId={householdId} members={members}/>
+        <AddChoreForm householdId={householdId} members={members} />
       )}
 
       <ChoreList chores={chores} members={members} onEdit={setEditing} onChanged={load} />
+      <HouseholdCard householdId={householdId} />
     </main>
   );
 }

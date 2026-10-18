@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { getToday, type TodayItem } from "@/lib/rotation";
 import ChoreCard from "@/components/ChoreCard";
+import { getMyHouseholdId } from "@/lib/household";
 import Loader from "@/components/Loader";
 const todayString = () => new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD, your local date
 
@@ -15,16 +16,9 @@ export default function Home() {
   const load = useCallback(async () => {
     const supabase = createClient();
 
-    // Find this person's household, or create it the first time
-    let { data: household } = await supabase
-      .from("households").select("id").limit(1).maybeSingle();
-    if (!household) {
-      const { data } = await supabase
-        .from("households").insert({}).select("id").single();
-      household = data;
-    }
-    if (!household) return;
-    setHouseholdId(household.id);
+    const hid = await getMyHouseholdId(supabase);
+    if (!hid) return;
+    setHouseholdId(hid)
 
     const [m, c, d] = await Promise.all([
       supabase.from("members").select("id, name"),
