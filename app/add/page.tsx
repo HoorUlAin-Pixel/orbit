@@ -23,7 +23,7 @@ export default function AddPage() {
 
     const [m, c] = await Promise.all([
       supabase.from("members").select("id, name").order("name"),
-      supabase.from("chores").select("id, name, every_n_days").order("name"),
+      supabase.from("chores").select("id, name, every_n_days, skipped_on").order("name"),
     ]);
     setMembers(m.data ?? []);
     setChores(c.data ?? []);
