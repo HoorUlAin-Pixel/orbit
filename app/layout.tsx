@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Nunito  } from "next/font/google";
+import SplashScreen from "@/components/SplashScreen";
 import BottomNav from "@/components/BottomNav";
 import "./globals.css";
 
@@ -17,6 +18,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={` h-full antialiased`}
     >
       <body className={`${nunito.className} antialiased`}>
+        <SplashScreen />
         {children}
         <BottomNav />
       </body>

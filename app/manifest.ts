@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Rotate. Share. Done.",
     start_url: "/",
     display: "standalone",
-    background_color: "#ffffff",
+    background_color: "#4f46e5",
     theme_color: "#4f46e5",
     icons: [
       { src: "/icons/192", sizes: "192x192", type: "image/png" },
