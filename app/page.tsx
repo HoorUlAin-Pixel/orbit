@@ -1,30 +1,37 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { getToday, type TodayItem } from "@/lib/rotation";
-import ChoreCard from "@/components/ChoreCard";
 import { getMyHouseholdId } from "@/lib/household";
+import { getToday, type TodayItem } from "@/lib/rotation";
+import type { Member } from "@/lib/types";
+import ChoreCard from "@/components/ChoreCard";
 import Loader from "@/components/Loader";
+import WhoAmI from "@/components/WhoAmI";
+
 const todayString = () => new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD, your local date
 
 export default function Home() {
   const [items, setItems] = useState<TodayItem[]>([]);
+  const [members, setMembers] = useState<Member[]>([]);
+  const [myMemberId, setMyMemberId] = useState<string | null>(null);
   const [householdId, setHouseholdId] = useState("");
   const [loading, setLoading] = useState(true);
   const started = useRef(false);
 
   const load = useCallback(async () => {
     const supabase = createClient();
-
     const hid = await getMyHouseholdId(supabase);
     if (!hid) return;
-    setHouseholdId(hid)
+    setHouseholdId(hid);
 
-    const [m, c, d] = await Promise.all([
+    const [m, c, d, me] = await Promise.all([
       supabase.from("members").select("id, name"),
       supabase.from("chores").select("id, name, every_n_days, skipped_on, pinned_to"),
       supabase.from("completions").select("chore_id, member_id, done_on"),
+      supabase.from("household_users").select("member_id").limit(1).maybeSingle(),
     ]);
+    setMembers(m.data ?? []);
+    setMyMemberId(me.data?.member_id ?? null);
     setItems(getToday(m.data ?? [], c.data ?? [], d.data ?? [], todayString()));
     setLoading(false);
   }, []);
@@ -45,10 +52,12 @@ export default function Home() {
     });
     load();
   }
+
   async function skip(choreId: string, day: string | null) {
     await createClient().rpc("skip_chore", { p_id: choreId, p_day: day });
     load();
   }
+
   const active = items.filter((i) => !i.skipped);
 
   return (
@@ -62,6 +71,10 @@ export default function Home() {
         </p>
       </header>
 
+      {!loading && !myMemberId && (
+        <WhoAmI householdId={householdId} members={members} onClaimed={load} />
+      )}
+
       {loading ? (
         <Loader />
       ) : items.length === 0 ? (
@@ -69,7 +82,7 @@ export default function Home() {
           <p className="text-4xl">🪐</p>
           <p className="mt-2 font-semibold">Nothing due today</p>
           <p className="text-sm text-muted-foreground">
-            Add your household's names and chores on the Add tab.
+            Add your household&apos;s names and chores on the Add tab.
           </p>
         </div>
       ) : (
@@ -77,7 +90,10 @@ export default function Home() {
           <ChoreCard
             key={item.chore.id}
             item={item}
-            onDone={() => item.assignee && markDone(item.chore.id, item.assignee.id)}
+            meId={myMemberId}
+            onDone={() =>
+              item.assignee && markDone(item.chore.id, myMemberId ?? item.assignee.id)
+            }
             onSkip={() => skip(item.chore.id, todayString())}
             onUndoSkip={() => skip(item.chore.id, null)}
           />

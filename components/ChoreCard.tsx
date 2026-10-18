@@ -5,16 +5,19 @@ import type { TodayItem } from "@/lib/rotation";
 
 export default function ChoreCard({
   item,
+  meId,
   onDone,
   onSkip,
   onUndoSkip,
 }: {
   item: TodayItem;
+  meId?: string | null;
   onDone: () => void;
   onSkip: () => void;
   onUndoSkip: () => void;
 }) {
   const { chore, assignee, done, skipped } = item;
+  const who = assignee ? (assignee.id === meId ? "You" : assignee.name) : "";
 
   if (skipped) {
     return (
@@ -39,7 +42,7 @@ export default function ChoreCard({
       <div className="min-w-0 flex-1">
         <p className={`truncate font-medium ${done ? "line-through" : ""}`}>{chore.name}</p>
         <p className="text-sm text-muted-foreground">
-          {done ? "Done by" : "Up today:"} {assignee?.name}
+          {done ? "Done by" : "Up today:"} {who}
         </p>
       </div>
       {done ? (
