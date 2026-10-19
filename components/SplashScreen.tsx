@@ -1,29 +1,43 @@
 "use client";
 import { useEffect, useState } from "react";
 
+const KEY = "orbit-splash";
+
 export default function SplashScreen() {
   const [visible, setVisible] = useState(true);
   const [fading, setFading] = useState(false);
 
   useEffect(() => {
-  document.body.style.overflow = "hidden"; // no scrolling behind the splash
-  const fade = setTimeout(() => setFading(true), 1700);
-  const hide = setTimeout(() => {
-    setVisible(false);
-    document.body.style.overflow = "";
-  }, 2200);
-  return () => {
-    clearTimeout(fade);
-    clearTimeout(hide);
-    document.body.style.overflow = "";
-  };
-}, []);
+    let seen = false;
+    try {
+      seen = !!sessionStorage.getItem(KEY);
+    } catch {}
+    if (seen) {
+      setVisible(false);
+      return;
+    }
+
+    document.body.style.overflow = "hidden"; // no scrolling behind the splash
+    const fade = setTimeout(() => setFading(true), 1700);
+    const hide = setTimeout(() => {
+      setVisible(false);
+      document.body.style.overflow = "";
+      try {
+        sessionStorage.setItem(KEY, "1");
+      } catch {}
+    }, 2200);
+    return () => {
+      clearTimeout(fade);
+      clearTimeout(hide);
+      document.body.style.overflow = "";
+    };
+  }, []);
 
   if (!visible) return null;
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-[linear-gradient(135deg,#4f46e5,#8b5cf6)] text-white transition-opacity duration-500 ${
+      className={`splash-root fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-[#6a5ef0] text-white transition-opacity duration-500 ${
         fading ? "opacity-0" : "opacity-100"
       }`}
     >
