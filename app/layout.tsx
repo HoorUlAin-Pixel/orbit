@@ -21,7 +21,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className={`${nunito.className} antialiased`}>
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{if(sessionStorage.getItem("orbit-splash"))document.documentElement.classList.add("no-splash")}catch(e){}`,
+            __html: `try{var s=window.matchMedia("(display-mode: standalone)").matches||navigator.standalone;if(s||sessionStorage.getItem("orbit-splash"))document.documentElement.classList.add("no-splash")}catch(e){}`,
           }}
         />
         <SplashScreen />

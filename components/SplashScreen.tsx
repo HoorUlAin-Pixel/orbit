@@ -11,8 +11,11 @@ export default function SplashScreen() {
     let seen = false;
     try {
       seen = !!sessionStorage.getItem(KEY);
-    } catch {}
-    if (seen) {
+    } catch { }
+    const installed =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (navigator as Navigator & { standalone?: boolean }).standalone === true;
+    if (seen || installed) {
       setVisible(false);
       return;
     }
@@ -24,7 +27,7 @@ export default function SplashScreen() {
       document.body.style.overflow = "";
       try {
         sessionStorage.setItem(KEY, "1");
-      } catch {}
+      } catch { }
     }, 2200);
     return () => {
       clearTimeout(fade);
@@ -37,9 +40,8 @@ export default function SplashScreen() {
 
   return (
     <div
-      className={`splash-root fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-[#6a5ef0] text-white transition-opacity duration-500 ${
-        fading ? "opacity-0" : "opacity-100"
-      }`}
+      className={`splash-root fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-[linear-gradient(135deg,#4f46e5,#8b5cf6)] text-white transition-opacity duration-500 ${fading ? "opacity-0" : "opacity-100"
+        }`}
     >
       <div className="relative flex size-40 items-center justify-center">
         <div className="splash-orbit absolute inset-0">
