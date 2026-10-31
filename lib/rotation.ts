@@ -1,6 +1,6 @@
 import type { Chore, Completion, Member } from "./types";
 
-export type TodayItem = { chore: Chore; assignee: Member | null; done: boolean };
+export type TodayItem = { chore: Chore; assignee: Member | null; done: boolean; skipped?: boolean };
 
 export function getToday(
   members: Member[],
@@ -29,15 +29,20 @@ export function getToday(
       items.push({ chore, assignee: who, done: true });
       continue;
     }
+    if (chore.skipped_on === today) {
+      items.push({ chore, assignee: null, done: false, skipped: true });
+      continue;
+    }
 
     const last = mine.map((c) => c.done_on).sort().pop();
     const due = !last || daysBetween(last, today) >= chore.every_n_days;
     if (!due) continue;
 
     // Give it to whoever has the lightest load
-    const pick = members.reduce((a, b) =>
-      load.get(b.id)! < load.get(a.id)! ? b : a
-    );
+    const pinned = members.find((m) => m.id === chore.pinned_to);
+    const pick =
+      pinned ??
+      members.reduce((a, b) => (load.get(b.id)! < load.get(a.id)! ? b : a));
     load.set(pick.id, load.get(pick.id)! + 1);
     items.push({ chore, assignee: pick, done: false });
   }

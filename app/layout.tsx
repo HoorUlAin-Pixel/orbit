@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { Nunito  } from "next/font/google";
+import { Nunito } from "next/font/google";
+import SplashScreen from "@/components/SplashScreen";
 import BottomNav from "@/components/BottomNav";
 import "./globals.css";
 
-const nunito  = Nunito ({ subsets: ["latin"] });
+const nunito = Nunito({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Orbit",
@@ -15,8 +16,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       className={` h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className={`${nunito.className} antialiased`}>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var s=window.matchMedia("(display-mode: standalone)").matches||navigator.standalone;if(s||sessionStorage.getItem("orbit-splash"))document.documentElement.classList.add("no-splash")}catch(e){}`,
+          }}
+        />
+        <SplashScreen />
         {children}
         <BottomNav />
       </body>
