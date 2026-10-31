@@ -1,33 +1,35 @@
 # Orbit 🪐
 **Rotate. Share. Done.**
 
-A mobile-first chore rotation app that decides who does what today, so nobody has to nag anyone.
+A mobile-first chore rotation app for households. It decides who does what today, so nobody has to nag anyone.
 
 **Live demo:** https://orbit-five-bice.vercel.app/
 
-![Orbit screenshot]
-
 <p>
-  <img src="home.jpeg" width="230" alt="Home" />
-  <img src="add.jpeg" width="230" alt="Add chore" />
-  <img src="history.jpeg" width="230" alt="History" />
+  <img src="home.jpg" width="230" alt="Home" />
+  <img src="add.jpg" width="230" alt="Add chore" />
+  <img src="history.jpg" width="230" alt="History" />
 </p>
 
-
 ## What it does
-- **Today's rotation:** each due chore goes to the household member who has done the fewest, so the load stays fair.
-- **One-tap "Done":** mark a chore complete from your phone.
-- **Weekly history:** see what got done in the last 7 days, and by whom.
-- **Installable:** works as a home-screen app (PWA).
+- **Today's rotation:** each due chore goes to the household member with the lightest load, so the work stays fair. Chores can also be pinned to one person.
+- **One-tap Done:** credits whoever is logged in and taps it.
+- **Skip for today:** skip a chore, with undo. It comes back tomorrow.
+- **Edit and delete chores:** daily, weekly, or every N days.
+- **Household invites:** share an 8-character join code. Others sign up, join, and pick their name.
+- **Weekly history:** the last 7 days, with a count per person.
+- **Installable PWA:** add it to your home screen. It has an animated splash screen.
 
 ## Tech stack
 Next.js (App Router) · TypeScript · Tailwind CSS · shadcn/ui · Supabase (Postgres + Auth) · Vercel
 
 ## How the rotation works
-`lib/rotation.ts` checks which chores are due today (based on each chore's frequency and its last completion). It then assigns each one to the member with the lightest load, counting what they've already done and what they've been given today.
+`lib/rotation.ts` checks which chores are due today (from each chore's frequency and last completion). It gives each one to the member with the lightest load, counting what they've already done and what they've been given today. Pinned chores go straight to their person.
 
-## Security
-Supabase Auth handles login. Row Level Security policies mean each user can only read and write their own household's data.
+## Households and security
+- Supabase Auth handles login.
+- Row Level Security policies mean you can only read and write data for the household you belong to. A helper database function (`my_household_ids`) keeps the policies simple.
+- Joining with a code, picking your name, and skipping or updating chores run as small database functions.
 
 ## Run it locally
 ```bash
@@ -40,13 +42,11 @@ Create a `.env.local` file:
 NEXT_PUBLIC_SUPABASE_URL=your-project-url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 ```
-Run the SQL schema in your Supabase SQL editor, then:
+You also need a Supabase project with these tables: `households`, `household_users`, `members`, `chores` and `completions`. Then:
 ```bash
 npm run dev
 ```
 
 ## Scope decisions
-Built to be finished, not perfect: 3 screens, one core feature. Deliberately left for v2: household invites, pinning a chore to one person, offline support, notifications.
+Built to be finished, not perfect. v1 had 3 screens and one core feature. v2 added sharing (invites), chore management, and polish. Deliberately left for later: offline support, push notifications, and wrapping the PWA as an Android app (Bubblewrap).
 
-## About
-[OPTIONAL: one line about why you built it, e.g. "Built in short nap-time sessions while returning to web development after a career break." Keep it or delete it, your call.]
